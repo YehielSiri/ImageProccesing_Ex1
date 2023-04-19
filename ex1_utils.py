@@ -30,7 +30,22 @@ def imReadAndConvert(filename: str, representation: int) -> np.ndarray:
     :param representation: GRAY_SCALE or RGB
     :return: The image object
     """
-    pass
+    # Reads the Image
+    im_cv = cv2.imread(filename).astype(np.float32)
+    
+    # Make sure there is an image
+    if im_cv is None:
+        raise Exception("Cannot load image!\n")
+
+    # Convert the image
+    if representation == LOAD_GRAY_SCALE:
+        img = cv2.cvtColor(im_cv, cv2.COLOR_BGR2GRAY)
+    elif representation == LOAD_RGB:
+        img = cv2.cvtColor(im_cv, cv2.COLOR_BGR2RGB)
+    else:
+        raise Exception("Please choose RGB or GRAY SCALE!\n")
+    # Return a normalize image to [0,1]
+    return np.multiply(img, 1 / 255)
 
 
 def imDisplay(filename: str, representation: int):
