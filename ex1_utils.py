@@ -15,12 +15,12 @@ LOAD_GRAY_SCALE = 1
 LOAD_RGB = 2
 
 
-def myID() -> np.int:
+def myID() -> int:
     """
-    Return my ID (not the friend's ID I copied from)
+    Return my ID
     :return: int
     """
-    return 123456789
+    return 204155311
 
 
 def imReadAndConvert(filename: str, representation: int) -> np.ndarray:
