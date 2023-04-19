@@ -126,7 +126,29 @@ def hsitogramEqualize(imgOrig: np.ndarray) -> (np.ndarray, np.ndarray, np.ndarra
         :param imgOrig: Original Histogram
         :ret
     """
-    pass
+    # Collect the data and denormalize it
+    data = collect_data(imgOrig)
+    data = np.dot(data, 255).astype(int)
+
+    # Create histogram and get the number of total pixels (the last bin from cumsum)
+    histOrg, binsOrig = np.histogram(data, np.arange(257))
+    arr_cumsum = np.cumsum(histOrg)
+    NORMALIZE_COMP = arr_cumsum[-1]
+
+    # Build the Look-Up Table
+    LUT = np.array([int(x * (255 / NORMALIZE_COMP)) for x in arr_cumsum])
+
+    # For each intense in the Y channel, replace by LUT
+    y_channel_equalized = np.array([LUT[i] for i in data.flatten()]).reshape(data.shape)
+
+    # Convert back to image
+    imgEq = back_to_image(imgOrig, y_channel_equalized)
+
+    # Get the histogram of equalized image
+    histEq, binsEq = np.histogram(y_channel_equalized, np.arange(257))
+    imgEq = np.multiply(imgEq, 1 / 255)
+
+    return imgEq, histOrg, histEq
 
 
 def quantizeImage(imOrig: np.ndarray, nQuant: int, nIter: int) -> (List[np.ndarray], List[float]):
