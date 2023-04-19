@@ -9,6 +9,12 @@
         ........::..:::::..:::......::
 """
 from ex1_utils import LOAD_GRAY_SCALE
+import cv2
+import numpy as np
+
+
+IMAGE_NAME = 'bac_con.png'
+
 
 
 def gammaDisplay(img_path: str, rep: int):
