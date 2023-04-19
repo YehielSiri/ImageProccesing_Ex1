@@ -13,8 +13,15 @@ import matplotlib.pyplot as plt
 import cv2
 import math
 import numpy as np
+
+
 LOAD_GRAY_SCALE = 1
 LOAD_RGB = 2
+RGB_YIQ_TRANSITION_MAT = np.array([[0.299, 0.587, 0.114],
+                                     [0.596, -0.275, -0.321],
+                                     [0.212, -0.523, 0.311]])
+
+
 
 
 def myID() -> int:
@@ -73,7 +80,7 @@ def transformRGB2YIQ(imgRGB: np.ndarray) -> np.ndarray:
     :param imgRGB: An Image in RGB
     :return: A YIQ in image color space
     """
-    pass
+    return np.dot(imgRGB.reshape(-1, 3), RGB_YIQ_TRANSITION_MAT.transpose()).reshape(imgRGB.shape)
 
 
 def transformYIQ2RGB(imgYIQ: np.ndarray) -> np.ndarray:
@@ -82,7 +89,7 @@ def transformYIQ2RGB(imgYIQ: np.ndarray) -> np.ndarray:
     :param imgYIQ: An Image in YIQ
     :return: A RGB in image color space
     """
-    pass
+    return np.dot(imgYIQ.reshape(-1, 3), np.linalg.inv(RGB_YIQ_TRANSITION_MAT).transpose()).reshape(imgYIQ.shape)
 
 
 def hsitogramEqualize(imgOrig: np.ndarray) -> (np.ndarray, np.ndarray, np.ndarray):
