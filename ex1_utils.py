@@ -92,6 +92,34 @@ def transformYIQ2RGB(imgYIQ: np.ndarray) -> np.ndarray:
     return np.dot(imgYIQ.reshape(-1, 3), np.linalg.inv(RGB_YIQ_TRANSITION_MAT).transpose()).reshape(imgYIQ.shape)
 
 
+# Auxiliary function for 'hsitogramEqualize' func
+def collect_data(imgOrig: np.ndarray) -> np.ndarray:
+    """
+    If the image is RGB, get the Y channel (from YIQ).
+    :param imgOrig:
+    :return:Y channel or Gray Scale respectively
+    """
+    return imgOrig.copy() if len(imgOrig.shape) != 3 else transformRGB2YIQ(imgOrig)[:, :, 0]
+
+
+# Auxiliary function for 'hsitogramEqualize' func
+def back_to_image(imgOrig: np.ndarray, data: np.ndarray) -> np.ndarray:
+    """
+    After proccesing on Y channel or GRAY SCALE, convert it back to image in RGB or Gray Scale
+    :param imgOrig:
+    :param data:
+    :return: image on RGB or Gray Scale respectively
+    """
+    if len(imgOrig.shape) == 3:
+        tmp = transformRGB2YIQ(imgOrig).dot(255).astype(int)
+        tmp[:, :, 0] = data
+        newImg = transformYIQ2RGB(tmp).astype(int)
+    else:
+        newImg = data
+
+    return newImg
+
+
 def hsitogramEqualize(imgOrig: np.ndarray) -> (np.ndarray, np.ndarray, np.ndarray):
     """
         Equalizes the histogram of an image
