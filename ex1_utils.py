@@ -55,7 +55,14 @@ def imDisplay(filename: str, representation: int):
     :param representation: GRAY_SCALE or RGB
     :return: None
     """
-    pass
+    if representation == LOAD_RGB:
+        plt.imshow(imReadAndConvert(filename, representation))
+    elif representation == LOAD_GRAY_SCALE:
+        plt.imshow(imReadAndConvert(filename, representation), cmap="gray")
+    else:
+        raise Exception("Please choose RGB or GRAY SCALE!\n")
+    plt.show()
+
 
 
 def transformRGB2YIQ(imgRGB: np.ndarray) -> np.ndarray:
