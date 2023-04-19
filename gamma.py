@@ -13,7 +13,7 @@ import cv2
 import numpy as np
 
 
-IMAGE_NAME = 'bac_con.png'
+IMAGE_NAME = 'testImg1.jpg'
 
 
 

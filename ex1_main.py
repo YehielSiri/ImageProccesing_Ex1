@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import time
 
 
-IMAGE_PATH = 'beach.jpg'
+IMAGE_PATH = 'testImg2.jpg'
 
 
 
