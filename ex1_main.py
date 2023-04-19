@@ -5,6 +5,10 @@ import matplotlib.pyplot as plt
 import time
 
 
+IMAGE_PATH = 'beach.jpg'
+
+
+
 def histEqDemo(img_path: str, rep: int):
     img = imReadAndConvert(img_path, rep)
     imgeq, histOrg, histEq = hsitogramEqualize(img)
@@ -47,7 +51,7 @@ def quantDemo(img_path: str, rep: int):
 
 def main():
     print("ID:", myID())
-    img_path = 'beach.jpg'
+    img_path = IMAGE_PATH
 
     # Basic read and display
     imDisplay(img_path, LOAD_GRAY_SCALE)
