@@ -159,4 +159,65 @@ def quantizeImage(imOrig: np.ndarray, nQuant: int, nIter: int) -> (List[np.ndarr
         :param nIter: Number of optimization loops
         :return: (List[qImage_i],List[error_i])
     """
-    pass
+    # Arguments checks - 2<=nQuant<=255 AND 1<=nIter<=1000
+    if nQuant < 2 or nQuant > 255 or nIter < 1 or nIter > 1000:
+        raise Exception("Invalid argument!")
+
+    # Collect the data and denormalize it
+    data = collect_data(imOrig)
+    data = np.dot(data, 255).astype(int)  # De-Normalize and convert to int
+
+    # Create the first divide of bounds
+    histOrg, binsOrig = np.histogram(data, np.arange(257))
+    arr_cumsum = np.cumsum(histOrg)
+    bounds = [0]
+    n = 1
+    for idx, value in enumerate(arr_cumsum):
+        if value / arr_cumsum[-1] > n / nQuant:
+            bounds.append(idx)
+            n += 1
+    bounds.append(255)
+
+    imgs = []
+    MSE = []
+    ALL_PIXELS = histOrg.sum()
+    # Do all this nIter times
+    for itr in range(nIter):
+        q = []  # Q values
+        for k in range(len(bounds) - 1):
+            # Collect the current section (Z's)
+            start = bounds[k]
+            end = bounds[k + 1]
+            if k == (len(bounds) - 2):  # Catch the 255 px at last round
+                end += 1
+            # Append the q by the formula as explained in lecture
+            if np.asarray(histOrg[start:end]).sum() != 0: # If there is no pixles in this section, mark it as 0
+                q_i = round((np.asarray((binsOrig[start:end] * histOrg[start:end])).sum())
+                            / np.asarray(histOrg[start:end]).sum())
+            else:
+                q_i = 0
+            q.append(q_i)
+
+        # Get copy of the data (because we go to change it by each iteration)
+        img_as_quantized = data.copy()
+        # Create the quantized image for this iteration
+
+        for i in range(len(bounds) - 1):
+            img_as_quantized = np.where(((bounds[i] <= img_as_quantized) & (img_as_quantized < bounds[i + 1])),
+                                        q[i], img_as_quantized)
+        # Get image after do this iteration of quantization
+        imgQu = back_to_image(imOrig, img_as_quantized)
+
+        # Append it for result
+        imgs.append(imgQu)
+
+        # Calculate the MSE
+        MSE.append((math.sqrt(((img_as_quantized - data) ** 2).sum())) / ALL_PIXELS)
+
+        # Create bounds for next iteration by formula as explained in the lecture
+        bounds = [0]
+        for i in range(len(q) - 1):
+            bounds.append(int((q[i] + q[i + 1]) / 2))
+        bounds.append(255)
+
+    return imgs, MSE
